@@ -7,6 +7,7 @@ class ColorCorrectionEffect : public PostProcessingLayer::Effect {
 public:
 	MAKE_PTRS(ColorCorrectionEffect);
 	Texture3D::Sptr Lut;
+	Texture3D::Sptr Lut2;
 
 	ColorCorrectionEffect();
 	ColorCorrectionEffect(bool defaultLut);
@@ -23,5 +24,6 @@ public:
 protected:
 	ShaderProgram::Sptr _shader;
 	float _strength;
+	float _strength2;
 };
 

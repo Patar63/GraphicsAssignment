@@ -2,6 +2,7 @@
 #include "Utils/ResourceManager/ResourceManager.h"
 #include "Utils/JsonGlmHelpers.h"
 #include "Utils/ImGuiHelper.h"
+#include "Gameplay/InputEngine.h"
 
 ColorCorrectionEffect::ColorCorrectionEffect() :
 	ColorCorrectionEffect(true) { }
@@ -9,7 +10,7 @@ ColorCorrectionEffect::ColorCorrectionEffect() :
 ColorCorrectionEffect::ColorCorrectionEffect(bool defaultLut) :
 	PostProcessingLayer::Effect(),
 	_shader(nullptr),
-	_strength(1.0f),
+	_strength(0.0f), 
 	Lut(nullptr)
 {
 	Name = "Color Correction";
@@ -21,8 +22,10 @@ ColorCorrectionEffect::ColorCorrectionEffect(bool defaultLut) :
 	});
 
 	if (defaultLut) {
-		Lut = ResourceManager::CreateAsset<Texture3D>("luts/cool.cube");
+		Lut = ResourceManager::CreateAsset<Texture3D>("luts/red.cube");
+
 	}
+	
 }
 
 ColorCorrectionEffect::~ColorCorrectionEffect() = default;
@@ -32,12 +35,16 @@ void ColorCorrectionEffect::Apply(const Framebuffer::Sptr& gBuffer)
 	_shader->Bind();
 	Lut->Bind(1);
 	_shader->SetUniform("u_Strength", _strength);
+
+	
 }
+
 
 void ColorCorrectionEffect::RenderImGui()
 {
 	LABEL_LEFT(ImGui::LabelText, "LUT", Lut ? Lut->GetDebugName().c_str() : "none");
 	LABEL_LEFT(ImGui::SliderFloat, "Strength", &_strength, 0, 1);
+
 }
 
 ColorCorrectionEffect::Sptr ColorCorrectionEffect::FromJson(const nlohmann::json& data)

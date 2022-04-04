@@ -23,7 +23,7 @@ RenderLayer::RenderLayer() :
 	_blitFbo(true),
 	_frameUniforms(nullptr),
 	_instanceUniforms(nullptr),
-	_renderFlags(RenderFlags::None),
+	_renderFlags(RenderFlags::EnableLight|RenderFlags::EnableSpecular|RenderFlags::EnableColorCorrection),
 	_clearColor({ 0.1f, 0.1f, 0.1f, 1.0f })
 {
 	Name = "Rendering";
