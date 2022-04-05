@@ -9,6 +9,9 @@
 #include "PostProcessing/BoxFilter3x3.h"
 #include "PostProcessing/BoxFilter5x5.h"
 #include "PostProcessing/OutlineEffect.h"
+#include "PostProcessing/BloomEffect.h"
+#include "PostProcessing/FilmGrain.h"
+#include "PostProcessing/Pixelation.h"
 
 PostProcessingLayer::PostProcessingLayer() :
 	ApplicationLayer()
@@ -36,6 +39,9 @@ void PostProcessingLayer::OnAppLoad(const nlohmann::json& config)
 	_effects.push_back(std::make_shared<BoxFilter3x3>());
 	_effects.push_back(std::make_shared<BoxFilter5x5>());
 	_effects.push_back(std::make_shared<OutlineEffect>());
+	_effects.push_back(std::make_shared<BloomEffect>());
+	_effects.push_back(std::make_shared<FilmGrain>());
+	_effects.push_back(std::make_shared<Pixelation>());
 
 	Application& app = Application::Get();
 	const glm::uvec4& viewport = app.GetPrimaryViewport();
@@ -83,9 +89,6 @@ void PostProcessingLayer::OnPostRender()
 	glDepthMask(false);
 	glDisable(GL_BLEND);
 
-	// Bind the quad VAO so our effects can use it
-	_quadVAO->Bind();
-
 	// Iterate over all the effects in the queue
 	for (const auto& effect : _effects) {
 		// Only render if it's enabled
@@ -99,14 +102,16 @@ void PostProcessingLayer::OnPostRender()
 
 			// Apply the effect and render the fullscreen quad
 			effect->Apply(gBuffer);
+			// Bind the quad VAO so our effects can use it
+			_quadVAO->Bind();
 			_quadVAO->Draw();
+			_quadVAO->Unbind();
 
 			// Unbind output and set it as input for next pass
 			effect->_output->Unbind();
 			current = effect->_output;
 		}
 	}
-	_quadVAO->Unbind();
 
 	// Restore viewport to game viewport
 	glViewport(viewport.x, viewport.y, viewport.z, viewport.w);

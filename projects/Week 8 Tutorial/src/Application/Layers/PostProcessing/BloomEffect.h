@@ -19,5 +19,14 @@ public:
 	virtual nlohmann::json ToJson() const override;
 
 protected:
-	ShaderProgram::Sptr _shader;
+	ShaderProgram::Sptr _HoriBlurShader;
+	ShaderProgram::Sptr _VertBlurShader;
+	ShaderProgram::Sptr _BrightShader;
+	ShaderProgram::Sptr _ComboShader;
+	Framebuffer::Sptr _Horizontal;
+	Framebuffer::Sptr _Vertical;
+	VertexArrayObject::Sptr _quadVAO;
+	float _weights[5] = { 0.22f, 0.19f, 0.12, 0.05, 0.03 };
+	float _radius;
+	float _threshold;
 };
